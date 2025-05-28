@@ -10,12 +10,20 @@ h1, h2, p {
     color: #333;
 }
 
+.lobby-holder {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 16px;
+  justify-content: center;
+}
+
 .lobby-card {
+  width: 100%;
+  max-width: 20rem;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   padding: 16px;
   margin: 12px auto;
-  max-width: 20rem;
 }
 
 .lobby-open{

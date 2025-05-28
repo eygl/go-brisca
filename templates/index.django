@@ -6,6 +6,7 @@
     <title>Brisca Go!</title>
     <link href="/css/index.css" rel="stylesheet">  
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
   </head>
   <body>
     <h1>Brisca Go!</h1> 

@@ -22,7 +22,7 @@ type Card struct {
   Rank   string 
 }
 
-type Player struct {
+type GamePlayer struct {
   Name string
   Hand []Card
 }
@@ -61,7 +61,7 @@ func dealCard(deck *[]Card) Card {
 }
 
 
-func main() {
+func Game() {
   fmt.Println("Welcome to Brisca!")
   fmt.Println()
   
@@ -72,7 +72,7 @@ func main() {
   fmt.Println("Trump Card:", trumpCard.Rank, "of", trumpCard.Suit)
 
   playerCount := 2
-  var players []Player
+  var players []GamePlayer
   //Create Players
   for i:= 0; i < playerCount; i++ {
     player := Player {
