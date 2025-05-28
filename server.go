@@ -9,23 +9,16 @@ import (
 
 func main() {
   fmt.Println("Starting server...")
-
   engine := django.New("./templates", ".django")
-
-
   app := fiber.New(fiber.Config{
     Views: engine,
   })
 
-  app.Get("/", func(c *fiber.Ctx) error {
-    return c.Render("index", fiber.Map{
-      "greeing": "world",
-    })
-  })
+  app.Static("/", "./static")
 
-  app.Get("/hello", func(c *fiber.Ctx) error {
-    return c.SendString("<p>Hey, it's me, the world.</p>")
-  })
+  app.Get("/", renderIndex)
+  app.Post("/home", renderHome)
+  app.Get("/lobbies", renderLobbies)
 
   log.Fatal(app.Listen(":3000"))
 }

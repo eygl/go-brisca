@@ -1,0 +1,46 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h2, p {
+    text-align: center;
+    color: #333;
+}
+
+.lobby-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin: 12px auto;
+  max-width: 20rem;
+}
+
+.lobby-open{
+  background-color: lightgreen;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.lobby-in-progress{
+  background-color: coral;
+}
+
+.lobby-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.lobby-card h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.center-horizontal {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  width: fit-content;
+  text-align: center;
+}

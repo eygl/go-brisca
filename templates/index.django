@@ -1,15 +1,45 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
-    <!--<link href="css/style.css" rel="stylesheet">  -->
+    <title>Brisca Go!</title>
+    <link href="/css/index.css" rel="stylesheet">  
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   </head>
   <body>
-    <h1>Hello World!</h1> 
-    <div id="message" hx-get="/hello" hx-target="this" hx-swap="innerHTML" hx-trigger="load">
+    <h1>Brisca Go!</h1> 
+    <div id="game">
+      <form class="center-horizontal">
+        <h2>Enter Name</h2>
+        <input type="text" id="username" name="username" value="" placeholder="Enter username">
+        <input type="hidden" id="uuid" name="uuid" value="playerID">
+        <button hx-post="/home" hx-target="#game" hx-swap="innerHTML" hx-trigger="click">Login</button>
+      </form>
     </div>
+    <p>Created by Astro. 2025</p> 
+    <script>
+      function getOrCreatePlayerID() {
+        let id = localStorage.getItem("uuid");
+        if (!id) {
+          id = crypto.randomUUID();
+          localStorage.setItem("uuid", id);
+        }
+       return id;
+      }
+
+     document.addEventListener("DOMContentLoaded", () => {
+       const uuid = getOrCreatePlayerID();
+       document.getElementById("uuid").value = uuid;
+       const savedUsername = localStorage.getItem("username");
+       if (savedUsername) {
+        document.getElementById("username").value = savedUsername;
+       }
+
+       document.getElementById("username").addEventListener("input", (e) => {
+        localStorage.setItem("username", e.target.value);
+       });
+     }); 
+    </script>
   </body>
 </html>
