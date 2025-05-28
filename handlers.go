@@ -10,21 +10,27 @@ func renderIndex(c *fiber.Ctx) error {
   return c.Render("index", fiber.Map{})
 } 
 
-func renderLobbies(c *fiber.Ctx) error {
-  html := `
-  <div class="lobby-card lobby-open">
-    <h2>Room 1</h2>
-    <p>Status: Open</p>
-    <p>Players: 1/4</p>
-    <button>Join</button>
-  </div>
-  <div class="lobby-card lobby-in-progress">
-    <h2>Room 2</h2>
-    <p>Status: In Progress</p>
-    <p>Players: 4/4</p>
-    <button>Join</button>
-  </div>
-  `
+func renderLobbies(c *fiber.Ctx, lobbies []Lobby) error {
+  html := ""
+  for _, lobby := range lobbies {
+    count := 0
+    if len(lobby.Player1) > 0 { count += 1}
+    if len(lobby.Player2) > 0 { count += 1}
+    if len(lobby.Player3) > 0 { count += 1}
+    if len(lobby.Player4) > 0 { count += 1}
+
+    html += fmt.Sprintf(`
+      <div class="lobby-card lobby-%s">
+        <h2>Room %d</h2>
+        <p>Status: %s</p>
+        <p>Players: %d/4</p>
+        <button>Join</button>
+      </div>
+    `, lobby.Status, lobby.LobbyID, lobby.Status, count)
+
+    
+
+  }
   return c.SendString(html)
 }
 

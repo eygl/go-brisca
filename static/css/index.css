@@ -44,3 +44,7 @@ h1, h2, p {
   width: fit-content;
   text-align: center;
 }
+
+.game {
+  height: auto;
+}
