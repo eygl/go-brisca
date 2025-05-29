@@ -13,12 +13,18 @@ Statuses
 - Completed
 
 gameState
+- lobbyID
 - starting
+- p1_uuid
+- p2_uuid
+- p3_uuid
+- p4_uuid
 - player1 turn
 - player2 turn
 - player3 turn
 - player4 turn
 - finished
+- deck
 
 Lobby
 - lobbyID

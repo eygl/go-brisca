@@ -10,38 +10,6 @@ func renderIndex(c *fiber.Ctx) error {
   return c.Render("index", fiber.Map{})
 } 
 
-func renderLobbies(c *fiber.Ctx, players []Player, lobbies []Lobby) error {
-  html := `<div class="lobby-holder">`
-  for _, lobby := range lobbies {
-    count := 0
-    if len(lobby.Player1) > 0 { count += 1}
-    if len(lobby.Player2) > 0 { count += 1}
-    if len(lobby.Player3) > 0 { count += 1}
-    if len(lobby.Player4) > 0 { count += 1}
-
-    html += fmt.Sprintf(`
-      <div class="lobby-card lobby-%s">
-        <h2>Room %d</h2>
-        <p>Status: %s</p>
-        <p>Players: %d/4</p>
-    `, lobby.Status, lobby.LobbyID, lobby.Status, count)
-
-    if lobby.Status == "completed" {
-      html += `
-      </div>
-      `
-    } else {
-      html += `
-        <button>Join</button>
-      </div>
-      `
-    }
-  }
-  html += "</div>"
-  html += fmt.Sprintf("<p>Number of players online: %d</p>",len(players))
-  return c.SendString(html)
-}
-
 func renderHome(c *fiber.Ctx, players *[]Player) error {
   username := c.FormValue("username")
   uuid := c.FormValue("uuid")
@@ -61,8 +29,46 @@ func renderHome(c *fiber.Ctx, players *[]Player) error {
   html:= fmt.Sprintf(`
       <h2>Welcome %s!</h2>
       <h2>Lobbies</h2>
-      <div id="lobbies" class="lobbies" hx-get="/lobbies" hx-target="this" hx-swap="innerHTML" hx-trigger="load, every 3s"></div>
-      <button>Create Lobby</button>
+      <button>+ Lobby</button>
+      <div id="lobbies" class="lobbies" hx-ext="ws" ws-connect="/ws/lobbies" ws-send>
+        <div id="lobby-holder"></div>
+      </div>
   `, username)
   return c.SendString(html)
 }
+
+func renderLobbies(players []Player, lobbies []Lobby) string {
+  html := `<div hx-swap-oob="innerHTML:#lobbies" class="lobbies">`
+  if len(lobbies) == 0 {
+    html += `<h2>No Lobbies. Create a new!</h2>` 
+  } else {
+    html += `<div class="lobby-holder">`
+    for _, lobby := range lobbies {
+      count := 0
+      if len(lobby.Player1) > 0 { count += 1}
+      if len(lobby.Player2) > 0 { count += 1}
+      if len(lobby.Player3) > 0 { count += 1}
+      if len(lobby.Player4) > 0 { count += 1}
+       html += fmt.Sprintf(`
+        <div class="lobby-card lobby-%s">
+          <h2>Room %d</h2>
+          <p>Status: %s</p>
+          <p>Players: %d/4</p>
+      `, lobby.Status, lobby.LobbyID, lobby.Status, count)
+       if lobby.Status == "completed" {
+        html += `
+        </div>
+        `
+      } else {
+        html += `
+          <button>Join</button>
+        </div>
+        `
+      }
+    }
+  }
+  html += fmt.Sprintf("<p>Number of players online: %d</p>",len(players))
+  html += "</div>"
+  return html
+}
+

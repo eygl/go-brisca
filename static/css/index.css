@@ -28,11 +28,14 @@ h1, h2, p {
 
 .lobby-open{
   background-color: lightgreen;
-  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .lobby-in-progress{
   background-color: coral;
+}
+
+.lobby-completed {
+  background-color: #cccccc;
 }
 
 .lobby-card:hover {

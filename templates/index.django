@@ -15,7 +15,7 @@
         <h2>Enter Name</h2>
         <input type="text" id="username" name="username" value="" placeholder="Enter username">
         <input type="hidden" id="uuid" name="uuid" value="playerID">
-        <button hx-post="/home" hx-target="#game" hx-swap="innerHTML" hx-trigger="click">Login</button>
+        <button id="login" hx-post="/home" hx-target="#game" hx-swap="innerHTML" hx-trigger="click">Login</button>
       </form>
     </div>
     <p>Created by Astro. 2025</p> 

@@ -19,3 +19,29 @@ document.addEventListener("DOMContentLoaded", () => {
   localStorage.setItem("username", e.target.value);
  });
 }); 
+
+//document.getElementById("login").addEventListener("click", () => {
+//  const socket = new WebSocket("ws://" + location.host + "/ws/lobbies");
+//
+//  socket.onopen = () => {
+//    console.log("WebSocket connection opened.");
+//    socket.send("lobbies")
+//  };
+//
+//  socket.onmessage = (event) => {
+//    console.log("Message from server: " + event.data);
+//  };
+//
+//  socket.onerror = (error) => {
+//    console.log("WebSocket error: " + error.message);
+//  };
+//
+//  socket.onclose = () => {
+//    console.log("WebSocket connection closed.");
+//  };
+//
+//  function log(message) {
+//    const logDiv = document.getElementById("lobbies");
+//    logDiv.innerHTML += `<p>${message}</p>`;
+//  }
+//});
