@@ -11,6 +11,7 @@ import (
 
 type Lobby struct {
   LobbyID     int64
+  Name        string
   Creator     string
   CreatorUUID string
   CreatedDate string
@@ -30,7 +31,7 @@ type Player struct {
 
 func main() {
   players := []Player{}
-  lobbies := []Lobby{}
+  lobbies := []Lobby{ }
 
   fmt.Println("Starting server...")
   engine := django.New("./templates", ".django")
@@ -54,6 +55,10 @@ func main() {
     return renderHome(c, &players)
   })
 
+  app.Post("/create/lobby", func(c *fiber.Ctx) error {
+    return lobbyRoom(c, &lobbies)
+  })
+
   //WS
   app.Get("/ws/lobbies", websocket.New(func(c *websocket.Conn) {
     defer c.Close()
@@ -69,8 +74,9 @@ func main() {
 				break
 			}
 		}
-    
   }))
+
+  // app.Get("/ws/lobby/")
 
   log.Fatal(app.Listen("0.0.0.0:3000"))
 }
