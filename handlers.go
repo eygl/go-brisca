@@ -9,7 +9,8 @@ import (
 )
 
 func renderIndex(c *fiber.Ctx) error {
-  return c.Render("index", fiber.Map{})
+  // return c.Render("index", fiber.Map{})
+  return c.Render("game", fiber.Map{})
 } 
 
 func renderHome(c *fiber.Ctx, players *[]Player) error {
