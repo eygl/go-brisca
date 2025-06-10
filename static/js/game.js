@@ -1,16 +1,51 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+
 // === Globals ===
 let scene, camera, renderer, controls;
 let textures = {};
 let testCard;
 let cameraKey = 0;
+let pickerTimer = 0;
 const cards = [];
 const hand = [];
 let hoverTimer = 0;
 const offsets = Array.from({ length: 3 }, () => Math.random() * 2 * Math.PI);
 
+
+class PickHelper {
+  constructor() {
+    this.raycaster = new THREE.Raycaster();
+    this.pickedObject = null;
+    this.pickedObjectSavedColor = 0;
+  }
+  pick(normalizedPosition, scene, camera, time) {
+    // restore the color if there is a picked object
+    if (this.pickedObject) {
+      this.pickedObject.material.emissive.setHex(this.pickedObjectSavedColor);
+      this.pickedObject = undefined;
+    }
+ 
+    // cast a ray through the frustum
+    this.raycaster.setFromCamera(normalizedPosition, camera);
+    // get the list of objects the ray intersected
+    const intersectedObjects = this.raycaster.intersectObjects(scene.children);
+    if (intersectedObjects.length) {
+      // pick the first object. It's the closest one
+      this.pickedObject = intersectedObjects[0].object;
+      // save its color
+      this.pickedObjectSavedColor = this.pickedObject.material.emissive.getHex();
+      // set its emissive color to flashing red/yellow
+      this.pickedObject.material.emissive.setHex((time * 8) % 2 > 1 ? 0xFFFF00 : 0xFF0000);
+    }
+  }
+}
+
+const pickPosition = {x: 0, y: 0};
+clearPickPosition();
+const pickHelper = new PickHelper();
 // === Init Functions ===
 initScene();
 await loadTextures();
@@ -128,12 +163,19 @@ function createPile() {
 }
 
 function addTable() {
-  const tableGeo = new THREE.CylinderGeometry(20, 20, 1, 64);
-  const tableMat = new THREE.MeshStandardMaterial({ map: textures.table });
-  const table = new THREE.Mesh(tableGeo, tableMat);
-  table.receiveShadow = true;
-  table.position.y = -0.51;
-  scene.add(table);
+  //const tableGeo = new THREE.CylinderGeometry(20, 20, 1, 64);
+  //const table = new THREE.Mesh(tableGeo, tableMat);
+  //const tableMat = new THREE.MeshStandardMaterial({ map: textures.table });
+  const gltfLoader = new GLTFLoader();
+  const url = '/static/assets/table.glb'
+  gltfLoader.load(url, (gltf) => {
+    const root = gltf.scene;
+    root.receiveShadow = true
+    scene.add(root);
+  });
+  //table.receiveShadow = true;
+  //table.position.y = -0.51;
+  //scene.add(table);
 }
 
 function createHand(xoff, yoff) {
@@ -145,23 +187,52 @@ function createHand(xoff, yoff) {
   });
 }
 
-document.addEventListener("click", (event) => {
-  let mouse = new THREE.Vector2();
-  mouse.set(
-    (event.clientX / window.innerWidth) * 2 - 1,
-    ((window.innerHeight - event.clientY)/ window.innerHeight) * 2 - 1);
-  const rayGun = new THREE.Raycaster();
-  rayGun.setFromCamera(mouse, camera);
-  const direction = rayGun.ray.direction;
-  const pointClick = rayGun.ray.origin.add(direction.multiplyScalar(4));
-  console.log(pointClick)
+let picked = []
 
-})
+function getCanvasRelativePosition(event) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (event.clientX - rect.left) * canvas.width  / rect.width,
+    y: (event.clientY - rect.top ) * canvas.height / rect.height,
+  };
+}
+
+function setPickPosition(event) {
+  const pos = getCanvasRelativePosition(event);
+  pickPosition.x = (pos.x / canvas.width ) *  2 - 1;
+  pickPosition.y = (pos.y / canvas.height) * -2 + 1;  // note we flip Y
+}
+ 
+function clearPickPosition() {
+  // unlike the mouse which always has a position
+  // if the user stops touching the screen we want
+  // to stop picking. For now we just pick a value
+  // unlikely to pick something
+  pickPosition.x = -100000;
+  pickPosition.y = -100000;
+}
+ 
+window.addEventListener('mousemove', setPickPosition);
+window.addEventListener('mouseout', clearPickPosition);
+window.addEventListener('mouseleave', clearPickPosition);
+
+window.addEventListener('touchstart', (event) => {
+  // prevent the window from scrolling
+  event.preventDefault();
+  setPickPosition(event.touches[0]);
+}, {passive: false});
+ 
+window.addEventListener('touchmove', (event) => {
+  setPickPosition(event.touches[0]);
+});
+ 
+window.addEventListener('touchend', clearPickPosition);
 
 function animate() {
   requestAnimationFrame(animate);
   testCard.rotation.y += 0.006;
   hoverTimer += 0.007;
+  pickerTimer += 0.001
 
   hand.forEach((card, i) => {
     card.position.y = 0.2 + Math.cos(hoverTimer + offsets[i]) / 19;
@@ -169,10 +240,11 @@ function animate() {
   });
   
   controls.update();
+  pickHelper.pick(pickPosition, scene, camera, pickerTimer);
   renderer.render(scene, camera);
 
   //Camera Pan
   //cameraKey += 0.001
-  //camera.position.set(16 * Math.cos(cameraKey), 8, 16 * Math.sin(cameraKey));
+  //camera.position.set(16 * Math.sin(cameraKey), 8, 16 * Math.cos(cameraKey));
   //camera.lookAt(0, 0, 0);
 }
